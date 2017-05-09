@@ -4,28 +4,32 @@ class: center, middle
 
 # Revealing the Necessary Conditions to Achieve 80Gbps High-Speed PC Router
 
-- Yasuhiro Ohara (NTT Com)
-- Yudai Yamagishi (NTT Com)
-- Satoshi Sakai (NTT Com)
-- Abhik Datta Banik (NTT Com)
-- Shin Miyakawa (NTT Com)
+Yasuhiro Ohara (NTT Com) <br>
+Yudai Yamagishi (NTT Com) <br>
+Satoshi Sakai (NTT Com) <br>
+Abhik Datta Banik (NTT Com) <br>
+Shin Miyakawa (NTT Com) <br>
 
 AINTEC'15 (Asian Internet Engineering Conference)
+
+## Hiroki SHIROKURA @slankdev
 
 ---
 # 背景
 
-PCとCOTSデバイスでの高性能化は終わりのない疑問として残る
+汎用HWでの高性能化は終わりのない疑問として残る
 
-- IndustrialではCOTSデバイスとしてカウントされていないHWがある
-  技術的詳細が明らかになっていない
-- 研究分野ではCOTSデバイスのみでの限界性能がフォーカスされていない
+- **IndustrialではCOTSデバイスとしてカウントされていないHWがある<br>
+  これらの技術的詳細が明らかになっていない**
+- **研究分野ではCOTSデバイスのみでの限界性能がフォーカスされていない**
 
-本研究では80Gbpsを達成するPCルータをCOTSデバイスの最適な設定で実現する。
-500K BGP Full route 128B 80Gbpsを達成する
-高性能なルーティングアルゴリズムであるPoptrieを用いて
+本稿での内容
+- 80Gbpsを達成するPCルータをCOTSデバイスの最適な設定で実現
+- 500K BGP Full route 128B 80Gbpsを達成
+- 高性能なルーティングアルゴリズムPoptrie
 
 COTS: commercial off-the-shelf  製品版、一般向け提供されているもの
+
 
 ---
 # Introduction
@@ -34,62 +38,82 @@ COTS: commercial off-the-shelf  製品版、一般向け提供されているも
 データリンクの速度も10GE,40GbE,100GbEとどんどん増加している
 
 - スケールアウトアプローチ
-- COTSデバイスはそれに最適に製造されている値段的コストも低い
-- 100KのCOTSデバイスはデータセンタにおかれ、ソフトウェアにDriveされている
-- 100GbEクラスショートパケット処理性能をCommodity HWで扱うのも近年進んでいる
+- COTSデバイスは低コスト
+- 00K個のCOTSデバイスはデータセンタにおかれ、ソフトウェア制御
+- 100GbE ショートパケット処理性能を汎用HWで制御
 	- DPDK
 	- Netmap
-- 我々は100GbEを達成するPCルータを取り組む
-  - Poptrieによるルーティングはできるようになった。
+- 本稿では100GbEを達成するPCルータを取り組むプロジェクト
+  - Poptrieによるルーティング100GbE達成
+
+
+
+---
+# Index
+
+1. Related Work
+2. Impact of High-speed Software Router Technology
+3. How to Construct the 80Gbps PC Router
+4. Evaluation
+5. Conclusion
+
+ここからが本題
+
+
+---
+# Index
+
+1. **Related Work**
+2. Impact of High-speed Software Router Technology
+3. How to Construct the 80Gbps PC Router
+4. Evaluation
+5. Conclusion
+
 
 ---
 # Related Work
 
-- Click (Click Moduler Router)
-- RouteBricks
-- Packet Shader
+- Click (Click Moduler Router) 4.95Mpps
+- RouteBricks 35Gbps
+- Packet Shader 39,28Gbps for IPv4,v6 (64B)
 - Click OS
+- Radisys 80Gbps (no routing)
 
-
----
-# Radisys
-  - packet forward only
-	- no routing
-	- 80Gbps with DPDK x86
 
 
 ---
-# Click (Click Moduler Router)
-	- detail
-		- configuable
-		- flexible
-		- software router
-  - apprortions
-		- router function like a queuing
-		- 現代のベースになる
-	- 4.95Mpps
+# Click (ACM'2000 TOCS)
+	- configuable flexible software router 現代のベースになる
+	- ルータやスイッチ = { Match, Action, Dataflow, Queuing }という考え
+
+<div align="center">
+<img src="click.jpg" alt="Drawing" style="width: 90%;"/>
+</div>
+
 
 ---
-# RouteBricks
-	- click environmentを使用
-	- COTSデバイス
-	- 35Gbpsまで上昇
-	- Points
-		- Multi Core CPU
-		- Multi Queue NIC
+# RouteBricks (ACM'09 SOSP)
+
+- Multi Core CPU Multi Queue NIC
+
+<div align="center">
+<img src="routebricks.png" alt="Drawing" style="width: 50%;"/>
+</div>
+
 
 ---
-# Packet Shader
-	- Highperformance Soft Router
-	- GPU for packet processing
-	- paralllel procesing power of GPU
-	- Optimize packet I/O by incorporating enhance packet buffer
-	- Points
-		- Parallel hw proc
-		- NUMA
-		- Mutiple Core CPU
-	- 39Gbps for IPv4 (64B)
-	- 38Gbps for IPv6 (64B)
+# Packet Shader (SIGCOMM'10)
+
+- GPU for packet processing
+- Optimize packet I/O by incorporating enhance packet buffer
+- Points
+	- Parallel hw proccess
+	- NUMA Multiple Core CPU
+
+<div align="center">
+<img src="packetshader.png" alt="Drawing" style="width: 70%;"/>
+</div>
+
 
 ---
 # Click OS
@@ -97,23 +121,48 @@ COTS: commercial off-the-shelf  製品版、一般向け提供されているも
 	- Hundreds of middleboxes concurerently con COTS hardware
 	- vely low latency
 	- fast bootup
+	- click environmentを使用
 	- Click の原則を継承
 
----
 # Radisys
   - packet forward only
 	- no routing
-	- 80Gbps with DPDK x86
 	- special board
+
+
+---
+# Index
+
+1. Related Work
+2. **Impact of High-speed Software Router Technology**
+3. How to Construct the 80Gbps PC Router
+4. Evaluation
+5. Conclusion
+
 
 ---
 # Impact of High-speed SW Router Technology
 
 - ASIC, FPGAが市場を支配している
-- コストダウン
-- capex opexダウン
-- reducable generic pc
-- Open Sourceにすればextend, debugもできるようになる, まわりが
+- 汎用PCで専用HW並みの性能を出すと
+- 1 million USD -> 100K USD以下 (1,000,000,00円 -> 100,000,00円以下)
+- CAPEX OPEX 両方ダウン
+- Open Sourceにすればだれでもextend, debugもできるようになる
+
+より詳しくは以下を参照
+http://slankdev.hatenablog.com/entry/2017/05/06/041354
+
+
+---
+# Index
+
+1. Related Work
+2. Impact of High-speed Software Router Technology
+3. **How to Construct the 80Gbps PC Router**
+4. Evaluation
+5. Conclusion
+
+
 
 ---
 # How to Construct the 80Gbps PC router
@@ -130,15 +179,17 @@ COTS: commercial off-the-shelf  製品版、一般向け提供されているも
 ---
 # Hardware and Sftware
 
- Kind       | Product Name                | Cost
- -----------|-----------------------------|-------
- M/B        | Supermicro X10DAX &amp; Chassis | $2K
- CPU        | Intel Xeon E5-2687WV3 x 2   | $6K
- Mem        | DDR4-2133 16GB x 16 = 256GB | $4K
- NIC        | Intel XL710-QDA1 x 4        | $4K
- OS         | Ubuntu 14.04 LTS            | -
- Data plane | Intel DPDK 2.0.0            | -
- Lookup     | Poptrie                     | -
+<img src="tab1.png" alt="Drawing" style="width: 100%;"/>
+
+$16K = 1600000Yen = 160万円
+
+---
+# 補足: RSS(Receive Side Scaling)
+
+<div align="center">
+<img src="rss.png" alt="Drawing" style="height: 70%;"/>
+</div>
+
 
 ---
 # RSS Configuration
@@ -158,11 +209,9 @@ COTS: commercial off-the-shelf  製品版、一般向け提供されているも
 --config '(0,0,4),(0,1,5),(1,0,6),(1,1,7),(2,0,10),(2,1,11),(3,0,12),(3,1,13)'
 ```
 
-実験後の理解としてCore1は各portに1つのペアが指定されたことを示す.????
-
-```clang
---config '(0,0,4),(1,0,6),(2,0,10),(3,0,12)'
-```
+- 各portにQueueを2つ用意
+- それぞれのQueueに一つのCPUを割り当てる
+- 合計8コア用意する
 
 
 ---
@@ -200,7 +249,7 @@ Hugepageはユーザ空間の1pageを大きく確保することによりpage mi
 - なので本研究では128Bに指定
 
 ```clang
-set pci -s <PCIeBusID> A8.W=12F
+setpci -s <PCIeBusID> A8.W=12F
 ```
 
 DPDk Config
@@ -209,6 +258,8 @@ DPDk Config
 CONFIG_RTE_PCI_CONFIG=y
 CONFIG_RTE_PCI_EXTENDED_TAG="on"
 ```
+
+
 ---
 # isolCPUs
 
@@ -221,7 +272,6 @@ PMDはbusy-loopでずっと回りつづけるためisolateが必要
 ```clang
 isolcpus=4-18
 ```
-
 
 ---
 # Intel DPDK Configuration
@@ -266,8 +316,33 @@ l3fwdでLPMが提供されている.
 
 - Poptrie adopt l3fwd
 
+
+
+---
+# Index
+
+1. Related Work
+2. Impact of High-speed Software Router Technology
+3. How to Construct the 80Gbps PC Router
+4. **Evaluation**
+5. Conclusion
+
+
+
+
 ---
 # Evaluation
+
+Eval環境についての説明
+- Network Configuration
+- Routing Table
+- Traffic Pattern
+- Basic Setting Summary
+
+実験結果の評価
+- Conparison of parameters
+- NUMA Position
+- LPM vs Poptrie
 
 
 ---
@@ -308,57 +383,80 @@ Thre next-hop field of all routeing-tables were set to the port ID.(round robin)
 
 それぞれ以下のような場合を言う.
 
+
 ---
 # Basic Setting Summary
 
-Table2: Basic Setting
-
-Level  | Name                | Settings
--------|---------------------|-------------------
-OS     | Hugepages           | 1GB page x8
-       | isolcpus            | 4-18
-PCIe   | ExtTag              | On
-       | MaxReadReqSize      | 128 Bytes
-DPDK   | I40E\_ITR\_INTERVAL | 1020 or -1
-       | RSS                 | -rss all
-       | socket-mem          | 4096, 4096
-       | core assignments    | 2 (core, queue) pairs/port
-App    | Routing lookup      | Poptrie
+<img src="tab2.png" alt="Drawing" style="width: 100%;"/>
 
 次SectionからResultがある
+
+
 
 ---
 # Conparison by parameters
 
-- DPDK+Poptrie: 128B 80Gbps
 - Core1, NoRSSOptの比較 (RSSしていないという同じ状態)
 - (core, queue) pairの数の問題であることがわかる
-- traffic: **straight**, routgin table: **linx**
 - 5 times average
 
-<img src="fig2-3.png" alt="Drawing" style="width: 100%;"/>
+```clang
+Core1 --config '(0,0,4),(1,0,6),(2,0,10),(3,0,12)'
+```
+
+<!-- <img src="fig2-3.png" alt="Drawing" style="width: 100%;"/> -->
+<div align="center">
+<img src="fig2.png" alt="Drawing" style="width: 60%;"/>
+</div>
 
 
 ---
-# Cross CPU Traffic
 
-これにかんしては違いが現れず。より広帯域になったときにどうなるかに注目したい
+# NUMA Position
+
+これにかんしては違いが現れず.
+100GbE程度では関係がないっぽい
+
+<img src="fig1.png" alt="Drawing" style="width: 100%;"/>
+
 
 
 ---
 # LPM vs Poptrie
 
+
+<!-- <img src="fig4-5.png" alt="Drawing" style="width: 100%;"/> -->
+<div align="center">
+<img src="fig4.png" alt="Drawing" style="width: 70%;"/>
+</div>
+
+
+
+---
+# Index
+
+1. Related Work
+2. Impact of High-speed Software Router Technology
+3. How to Construct the 80Gbps PC Router
+4. Evaluation
+5. **Conclusion**
+
+
+
 ---
 # Conclusion and Future work
 
-- Described the implementation of a PC base high-speed software router which can schieve 80Gbps
-- PC can act as a high speed trouter for quite reasonable cost
+- Implementation of a PC base high-speed software router
+- Achieve 80Gbps
+- Can act as a high speed router
+- Reasonable cost
 
 
 ---
-# Reference
-# Memo
+# 寝ている人
+
+<div align="center">
+<img src="akire.png" alt="Drawing" style="height: 70%;"/>
+</div>
 
 
----
-"thre experiment result is omitted in this paper"が多いのはまあ仕方ないか
